@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import HomePage from './components/HomePage';
-
+import './App.css';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 

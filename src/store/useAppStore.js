@@ -9,11 +9,11 @@ const useAppStore = create((set) => ({
   users: [
     {
       id: 1,
-      username: 'John Doe',
+      username: 'Admin User',
       email: 'admin@1.com',
       phone: '1234',
       sex: 'male',
-      dob: '1990-01-01',
+      dob: '2002-01-01',
       role: 'Admin',
     },
   ],
