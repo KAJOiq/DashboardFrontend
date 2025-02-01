@@ -88,13 +88,30 @@ const AddProject = () => {
   );
 };
 
-
 const ShowProject = () => {
-  const { projects, fetchProjects } = useProjectStore(); 
+  const { projects, fetchProjects } = useProjectStore();
 
   useEffect(() => {
-    fetchProjects(1, 10); 
+    fetchProjects(1, 10);
   }, [fetchProjects]);
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:5091/api/project/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete project');
+      }
+
+      alert('Project deleted successfully!');
+      // Refresh the project list after deletion
+      fetchProjects(1, 10);
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    }
+  };
 
   return (
     <div className="container">
@@ -112,6 +129,7 @@ const ShowProject = () => {
                   <th>Description</th>
                   <th>Supervisor ID</th>
                   <th>Deadline</th>
+                  <th>Actions</th> {/* Add a column for actions */}
                 </tr>
               </thead>
               <tbody>
@@ -121,6 +139,14 @@ const ShowProject = () => {
                     <td>{project.description}</td>
                     <td>{project.supervisor_Id}</td>
                     <td>{new Date(project.deadline).toLocaleDateString('en-GB')}</td>
+                    <td>
+                      <button
+                        onClick={() => handleDelete(project.id)}
+                        style={{ backgroundColor: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '5px' }}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -133,6 +159,5 @@ const ShowProject = () => {
     </div>
   );
 };
-
 
 export { AddProject, ShowProject };

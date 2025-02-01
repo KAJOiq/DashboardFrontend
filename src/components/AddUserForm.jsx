@@ -70,7 +70,7 @@ const AddUserForm = () => {
     try {
       const response = await fetch('http://localhost:5091/api/account/register', {
         method: 'POST',
-        body: formDataToSend, 
+        body: formDataToSend,
       });
 
       if (response.ok) {
@@ -79,15 +79,16 @@ const AddUserForm = () => {
 
         if (contentType && contentType.includes('application/json')) {
           data = await response.json();
-        } else {
+          addUser(data); 
+          alert('User added successfully!');
+        } else if (contentType && contentType.includes('text/plain')) {
+          // Handle the case where the response is plain text (like "account created successfully")
           const text = await response.text();
-          console.error('Error: Expected JSON, but got:', text);
+          alert(text); // Show the plain text as an alert
+        } else {
+          console.error('Unexpected response format:', contentType);
           alert('Unexpected response format. Please try again later.');
-          return;
         }
-
-        addUser(data); 
-        alert('User added successfully!');
       } else {
         const errorText = await response.text(); 
         console.error('Error response:', errorText);  
