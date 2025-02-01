@@ -2,9 +2,8 @@ import { create } from 'zustand';
 
 const useAppStore = create((set) => ({
   roles: [
-    { id: 1, name: 'Admin' },
-    { id: 2, name: 'Editor' },
-    { id: 3, name: 'Viewer' },
+    { id: 1, name: 'Supervisor' },
+    { id: 2, name: 'Student' },
   ],
   users: [
     {
@@ -13,8 +12,8 @@ const useAppStore = create((set) => ({
       email: 'admin@1.com',
       phone: '1234',
       sex: 'male',
-      dob: '2002-01-01',
-      role: 'Admin',
+      dob: '1980-01-01',
+      role: 'Supervisor',
     },
   ],
   setRoles: (roles) => set({ roles }),
