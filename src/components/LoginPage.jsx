@@ -27,13 +27,12 @@ const LoginPage = ({ onLogin }) => {
       if (response.ok) {
         const data = await response.json();
 
-        // Store the token in localStorage
         localStorage.setItem('authToken', data.token);
-        localStorage.setItem('userEmail', data.email); // Store email for future use
-        localStorage.setItem('userName', data.username); // Store username
+        localStorage.setItem('userEmail', data.email); 
+        localStorage.setItem('userName', data.username); 
 
-        onLogin(data); // Call the parent onLogin function
-        navigate('/home'); // Redirect to home page
+        onLogin(data); 
+        navigate('/home'); 
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Login failed. Please try again.');

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import useProjectStore from '../store/projectAppStore';
 
-// ✅ Add Project Component
 const AddProject = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -17,11 +17,13 @@ const AddProject = () => {
       return;
     }
 
+    const formattedDeadline = new Date(deadline).toISOString().split('T')[0];
+
     const newProject = {
       title,
       description,
       supervisor_Id: supervisorId,
-      deadline
+      deadline: formattedDeadline,
     };
 
     try {
@@ -73,7 +75,7 @@ const AddProject = () => {
               onChange={(e) => setSupervisorId(e.target.value)}
             />
             <input
-              type="datetime-local"
+              type="date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
             />
@@ -86,30 +88,13 @@ const AddProject = () => {
   );
 };
 
-// ✅ Show Project Component
+
 const ShowProject = () => {
-  const [projects, setProjects] = useState([]);
+  const { projects, fetchProjects } = useProjectStore(); 
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await fetch('http://localhost:5091/api/project?CurrentPage=1&PageSize=5');
-        if (!response.ok) {
-          throw new Error('Failed to fetch projects');
-        }
-
-        const data = await response.json();
-
-        // Ensure projects is always an array
-        setProjects(Array.isArray(data) ? data : data.results || []);
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-        setProjects([]); // Ensure projects is always an array
-      }
-    };
-
-    fetchProjects();
-  }, []);
+    fetchProjects(1, 10); 
+  }, [fetchProjects]);
 
   return (
     <div className="container">
@@ -135,17 +120,19 @@ const ShowProject = () => {
                     <td>{project.title}</td>
                     <td>{project.description}</td>
                     <td>{project.supervisor_Id}</td>
-                    <td>{new Date(project.deadline).toLocaleString()}</td>
+                    <td>{new Date(project.deadline).toLocaleDateString('en-GB')}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
+
         <Link to="/home/add-project">Add Project</Link>
       </div>
     </div>
   );
 };
+
 
 export { AddProject, ShowProject };

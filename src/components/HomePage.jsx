@@ -1,17 +1,22 @@
+import { useEffect } from 'react';
 import { Link, Routes, Route, useNavigate } from 'react-router-dom';
 import AddUserForm from './AddUserForm';
 import useAppStore from '../store/useAppStore';
 
 const HomePage = () => {
-  const { users } = useAppStore();
+  const { users, fetchUsers } = useAppStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchUsers(); // Fetch users when component mounts
+  }, []);
 
   return (
     <div className="home-page">
       <div className="sidebar">
         <Link to="/home">Dashboard</Link>
         <Link to="/home/add-project">Add New Project</Link>
-        <Link to="/home/show-projects"> Show Projects</Link>
+        <Link to="/home/show-projects">Show Projects</Link>
       </div>
       <div className="content">
         <Routes>
@@ -40,17 +45,23 @@ const HomePage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map((user) => (
-                      <tr key={user.id}>
-                        <td>{user.id}</td>
-                        <td>{user.username}</td>
-                        <td>{user.email}</td>
-                        <td>{user.phone}</td>
-                        <td>{user.sex}</td>
-                        <td>{user.dob}</td>
-                        <td>{user.role}</td>
+                    {users.length > 0 ? (
+                      users.map((user) => (
+                        <tr key={user.id}>
+                          <td>{user.id}</td>
+                          <td>{user.username}</td>
+                          <td>{user.email}</td>
+                          <td>{user.phone}</td>
+                          <td>{user.sex}</td>
+                          <td>{user.dob}</td>
+                          <td>{user.role}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="7" style={{ textAlign: 'center' }}>Loading users...</td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>

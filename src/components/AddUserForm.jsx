@@ -14,13 +14,11 @@ const AddUserForm = () => {
 
   const { addUser } = useAppStore();
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Validate the form data
   const validateForm = () => {
     if (!formData.UserName) {
       alert('Username is required');
@@ -53,14 +51,11 @@ const AddUserForm = () => {
     return true;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form data before submitting
     if (!validateForm()) return;
 
-    // Log form data before sending for debugging
     console.log('Form Data:', formData);
 
     const formDataToSend = new FormData();
@@ -75,34 +70,31 @@ const AddUserForm = () => {
     try {
       const response = await fetch('http://localhost:5091/api/account/register', {
         method: 'POST',
-        body: formDataToSend, // Send data as FormData (multipart/form-data)
+        body: formDataToSend, 
       });
 
-      // Check if the response is valid JSON
       if (response.ok) {
         const contentType = response.headers.get('Content-Type');
         let data = null;
 
-        // Check for JSON response
         if (contentType && contentType.includes('application/json')) {
           data = await response.json();
         } else {
-          // If the response is not JSON, log the raw response and show a generic error
           const text = await response.text();
           console.error('Error: Expected JSON, but got:', text);
           alert('Unexpected response format. Please try again later.');
           return;
         }
 
-        addUser(data);  // Add the user to your app store
+        addUser(data); 
         alert('User added successfully!');
       } else {
-        const errorText = await response.text();  // Handle non-200 status codes
-        console.error('Error response:', errorText);  // Log errors for debugging
+        const errorText = await response.text(); 
+        console.error('Error response:', errorText);  
         alert(errorText || 'Failed to add user');
       }
     } catch (error) {
-      console.error('Error:', error);  // Log any network errors
+      console.error('Error:', error);  
       alert('An error occurred. Please try again later.');
     }
   };

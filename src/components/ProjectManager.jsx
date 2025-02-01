@@ -5,16 +5,16 @@ import { ShowProject } from './ShowProject';
 const ProjectManager = () => {
   const [projects, setProjects] = useState([]);
 
-  // Function to add a project
+ 
   const addProject = (project) => {
-    setProjects([...projects, { ...project, students: [] }]); // Initialize students as an empty array
+    setProjects([...projects, { ...project, students: [] }]); 
   };
 
-  // Function to add a student to a project
+
   const addStudentToProject = (project, studentName) => {
     const updatedProjects = projects.map((p) =>
       p.projectName === project.projectName
-        ? { ...p, students: [...p.students, studentName] } // Add student to the project
+        ? { ...p, students: [...p.students, studentName] } 
         : p
     );
     setProjects(updatedProjects);
@@ -25,7 +25,7 @@ const ProjectManager = () => {
       <AddProject onAdd={addProject} />
       <ShowProject
         projects={projects}
-        onAddStudent={addStudentToProject} // Pass the function correctly here
+        onAddStudent={addStudentToProject} 
       />
     </div>
   );
