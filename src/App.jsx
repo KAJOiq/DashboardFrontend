@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import HomePage from './components/HomePage';
 import { AddProject, ShowProject } from './components/Add&showProject';
-import './App.css';
+import './index.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
