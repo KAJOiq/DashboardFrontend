@@ -115,10 +115,71 @@ const AddProject = ({ onClose }) => {
   );
 };
 
+const ViewProject = ({ projectId, onClose }) => {
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { users, fetchUsers } = useAppStore();
+
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      try {
+        const response = await fetch(`http://localhost:5091/api/project/${projectId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch project details");
+        }
+        const data = await response.json();
+        setProject(data);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchProjectDetails();
+    fetchUsers();
+  }, [projectId, fetchUsers]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  const getSupervisorUsername = (supervisorId) => {
+    const supervisor = users.find((user) => user.id === supervisorId);
+    return supervisor ? supervisor.username : "Loading...";
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center p-4">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-xl font-bold mb-4">Project Details</h2>
+        <div className="space-y-4">
+          <p><strong>Title:</strong> {project.title}</p>
+          <p><strong>Description:</strong> {project.description}</p>
+          <p><strong>Supervisor:</strong> {getSupervisorUsername(project.supervisor_Id)}</p>
+          <p><strong>Deadline:</strong> {new Date(project.deadline).toLocaleDateString("en-GB")}</p>
+          <p><strong>Created At:</strong> {new Date(project.createdAt).toLocaleString()}</p>
+        </div>
+        <div className="mt-4">
+          <button onClick={onClose} className="px-4 py-2 bg-gray-400 text-white rounded">Close</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 const ShowProject = () => {
   const { projects, fetchProjects } = useProjectStore();
-  const [showModal, setShowModal] = useState(false);
   const { users, fetchUsers } = useAppStore();
+  const [showModal, setShowModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [currentProjectId, setCurrentProjectId] = useState(null);
 
   useEffect(() => {
     fetchProjects(1, 10);
@@ -129,7 +190,6 @@ const ShowProject = () => {
     const supervisor = users.find((user) => user.id === supervisorId);
     return supervisor ? supervisor.username : "Loading...";
   };
-
 
   const handleDelete = async (id) => {
     try {
@@ -147,6 +207,17 @@ const ShowProject = () => {
       console.error("Error deleting project:", error);
     }
   };
+
+  const handleView = (id) => {
+    setCurrentProjectId(id);
+    setShowViewModal(true);
+  };
+
+  const handleCloseViewModal = () => {
+    setShowViewModal(false);
+    setCurrentProjectId(null);
+  };
+
   return (
     <div className="flex">
       <Sidebar />
@@ -173,11 +244,15 @@ const ShowProject = () => {
                   <tr key={project.id} className="odd:bg-gray-100">
                     <td className="py-2 px-4 border">{project.title}</td>
                     <td className="py-2 px-4 border">{project.description}</td>
-                    <td className="py-2 px-4 border">
-                      {getSupervisorUsername(project.supervisor_Id)}
-                    </td>
+                    <td className="py-2 px-4 border">{getSupervisorUsername(project.supervisor_Id)}</td>
                     <td className="py-2 px-4 border">{new Date(project.deadline).toLocaleDateString("en-GB")}</td>
                     <td className="py-2 px-4 border text-center">
+                      <button
+                        onClick={() => handleView(project.id)}
+                        className="px-3 py-1 bg-blue-600 text-white rounded mr-2"
+                      >
+                        View
+                      </button>
                       <button
                         onClick={() => handleDelete(project.id)}
                         className="px-3 py-1 bg-red-600 text-white rounded"
@@ -192,8 +267,9 @@ const ShowProject = () => {
           </div>
         )}
       </div>
+      {showViewModal && <ViewProject projectId={currentProjectId} onClose={handleCloseViewModal} />}
     </div>
   );
 };
 
-export { AddProject, ShowProject };
+export { AddProject, ViewProject, ShowProject };

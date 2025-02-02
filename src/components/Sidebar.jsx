@@ -17,7 +17,7 @@ const Sidebar = () => {
             to="/home/show-projects"
             className="block py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300"
           >
-            Show Projects
+            Projects
           </Link>
         </li>
       </ul>

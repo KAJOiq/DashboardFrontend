@@ -22,7 +22,7 @@ const HomePage = () => {
           </Link>
 
           <Link to="/home/show-projects" className="block py-2 px-4 rounded-md hover:bg-blue-700">
-            Show Projects
+            Projects
           </Link>
         </nav>
       </div>
@@ -31,7 +31,6 @@ const HomePage = () => {
       <div className="flex-1 p-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Welcome to the Dashboard</h2>
         <div className="flex items-center gap-4 mb-4">
-          <h3 className="text-lg font-semibold text-gray-700">Users List</h3>
           <button
             onClick={() => setIsModalOpen(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300"
