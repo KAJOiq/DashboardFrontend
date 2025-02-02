@@ -106,7 +106,6 @@ const ShowProject = () => {
       }
 
       alert('Project deleted successfully!');
-      // Refresh the project list after deletion
       fetchProjects(1, 10);
     } catch (error) {
       console.error('Error deleting project:', error);

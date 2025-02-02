@@ -82,9 +82,8 @@ const AddUserForm = () => {
           addUser(data); 
           alert('User added successfully!');
         } else if (contentType && contentType.includes('text/plain')) {
-          // Handle the case where the response is plain text (like "account created successfully")
           const text = await response.text();
-          alert(text); // Show the plain text as an alert
+          alert(text);
         } else {
           console.error('Unexpected response format:', contentType);
           alert('Unexpected response format. Please try again later.');
