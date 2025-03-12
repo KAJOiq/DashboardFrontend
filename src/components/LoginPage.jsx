@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useAppStore from '../store/useAppStore'; 
 
 const LoginPage = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { setToken } = useAppStore(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,12 +29,21 @@ const LoginPage = ({ onLogin }) => {
       if (response.ok) {
         const data = await response.json();
 
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('userEmail', data.email); 
-        localStorage.setItem('userName', data.username); 
+        localStorage.setItem('token', data.user.token);
+        localStorage.setItem('email', data.user.email);
+        localStorage.setItem('username', data.user.username);
+        localStorage.setItem('roles',data.roles); 
 
-        onLogin(data); 
-        navigate('/home'); 
+        setToken(data.user.token);
+
+        onLogin({
+          username: data.user.username,
+          email: data.user.email,
+          token: data.user.token,
+          roles: data.roles,
+        });
+
+        navigate('/home');
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Login failed. Please try again.');

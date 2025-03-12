@@ -5,12 +5,18 @@ const useAppStore = create((set) => ({
     { id: 1, name: 'Supervisor' },
     { id: 2, name: 'Student' },
   ],
+
   users: [],
+
+  token: localStorage.getItem('token') || null,
+
   setUsers: (users) => set({ users }),
+
   addUser: (user) =>
     set((state) => ({
       users: [...state.users, user],
     })),
+
   fetchUsers: async () => {
     try {
       const response = await fetch('http://localhost:5091/api/account/all-users');
@@ -26,14 +32,24 @@ const useAppStore = create((set) => ({
         phone: user.phoneNumber || 'N/A',
         sex: user.sex,
         dob: user.dob.split('T')[0],
-        role: user.roles[0] || 'N/A', 
+        role: user.roles[0] || 'N/A',
       }));
 
-      set({ users: formattedUsers }); 
+      set({ users: formattedUsers });
     } catch (error) {
       console.error('Error fetching users:', error);
       set({ users: [] });
     }
+  },
+
+  setToken: (token) => {
+    localStorage.setItem('token', token); 
+    set({ token });
+  },
+
+  clearToken: () => {
+    localStorage.removeItem('token'); 
+    set({ token: null });
   },
 }));
 

@@ -9,14 +9,24 @@ const AddProject = ({ onClose }) => {
   const [description, setDescription] = useState("");
   const [supervisorId, setSupervisorId] = useState("");
   const [deadline, setDeadline] = useState("");
-  const { users, fetchUsers } = useAppStore();
+  const { users, fetchUsers, token } = useAppStore();
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    fetchUsers(); // Fetch users when component mounts
+    fetchUsers(); 
+    const roles = localStorage.getItem("roles");
+    if (roles && roles.includes("Supervisor")) {
+      setUserRole("Supervisor");
+    }
   }, [fetchUsers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (userRole !== "Supervisor") {
+      alert("Only supervisors can add projects.");
+      return;
+    }
 
     if (!title || !description || !supervisorId || !deadline) {
       alert("Please fill all fields.");
@@ -37,6 +47,7 @@ const AddProject = ({ onClose }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newProject),
       });
@@ -173,17 +184,23 @@ const ViewProject = ({ projectId, onClose }) => {
   );
 };
 
-
 const ShowProject = () => {
   const { projects, fetchProjects } = useProjectStore();
   const { users, fetchUsers } = useAppStore();
   const [showModal, setShowModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [currentProjectId, setCurrentProjectId] = useState(null);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     fetchProjects(1, 10);
     fetchUsers();
+    const roles = localStorage.getItem("roles"); 
+    if (roles && roles.includes("Supervisor")) {
+      setUserRole("Supervisor");
+    } else if (roles && roles.includes("Student")) {
+      setUserRole("Student");
+    }
   }, [fetchProjects, fetchUsers]);
 
   const getSupervisorUsername = (supervisorId) => {
@@ -192,15 +209,24 @@ const ShowProject = () => {
   };
 
   const handleDelete = async (id) => {
+    const roles = localStorage.getItem("roles"); 
+    if (!roles || !roles.includes("Supervisor")) {
+      alert("Only supervisors can delete projects.");
+      return;
+    }
+  
     try {
       const response = await fetch(`http://localhost:5091/api/project/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-
+  
       if (!response.ok) {
         throw new Error("Failed to delete project");
       }
-
+  
       alert("Project deleted successfully!");
       fetchProjects(1, 10);
     } catch (error) {
@@ -223,7 +249,11 @@ const ShowProject = () => {
       <Sidebar />
       <div className="flex-1 p-6">
         <h2 className="text-2xl font-bold">Show Projects</h2>
-        <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-blue-600 text-white rounded mt-4">Add Project</button>
+        {userRole === "Supervisor" && (
+          <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-blue-600 text-white rounded mt-4">
+            Add Project
+          </button>
+        )}
         {showModal && <AddProject onClose={() => setShowModal(false)} />}
         {projects.length === 0 ? (
           <p className="mt-4 text-gray-600">No projects found.</p>
@@ -253,12 +283,15 @@ const ShowProject = () => {
                       >
                         View
                       </button>
-                      <button
-                        onClick={() => handleDelete(project.id)}
-                        className="px-3 py-1 bg-red-600 text-white rounded"
-                      >
-                        Delete
-                      </button>
+                      {userRole === "Supervisor" && (
+                        <button
+                          onClick={() => handleDelete(project.id)}
+                          className="px-3 py-1 bg-red-600 text-white rounded"
+                        >
+                          Delete
+                        </button>
+                      )}
+                      {userRole === "Student" && <VoteButton projectId={project.id} />} 
                     </td>
                   </tr>
                 ))}
@@ -272,4 +305,59 @@ const ShowProject = () => {
   );
 };
 
-export { AddProject, ViewProject, ShowProject };
+
+const VoteButton = ({ projectId }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [voted, setVoted] = useState(false);
+  const { token } = useAppStore();
+
+  const handleVote = async () => {
+    if (!token) {
+      setError("يجب تسجيل الدخول للتصويت");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await fetch("http://localhost:5091/api/student/vote", {
+        method: "POST",
+        headers: {
+          accept: "*/*",
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ projectId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("فشل في إرسال التصويت");
+      }
+
+      setVoted(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div>
+      <button
+        onClick={handleVote}
+        disabled={isSubmitting || voted}
+        className="px-3 py-1 bg-green-600 text-white rounded ml-2"
+      >
+        {voted ? "تم التصويت" : isSubmitting ? "جاري التصويت..." : "صوت"}
+      </button>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+    </div>
+  );
+};
+
+
+
+export { AddProject, ViewProject, ShowProject, VoteButton };

@@ -11,7 +11,6 @@ const useProjectStore = create((set) => ({
       }
       const data = await response.json();
 
-      
       const projects = data.items || [];
 
       set({ projects });
