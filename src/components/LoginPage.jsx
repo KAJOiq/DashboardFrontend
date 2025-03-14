@@ -13,7 +13,7 @@ const LoginPage = ({ onLogin }) => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert('Please enter email and password.');
+      alert('يرجى إدخال البريد الإلكتروني وكلمة المرور.');
       return;
     }
 
@@ -32,7 +32,7 @@ const LoginPage = ({ onLogin }) => {
         localStorage.setItem('token', data.user.token);
         localStorage.setItem('email', data.user.email);
         localStorage.setItem('username', data.user.username);
-        localStorage.setItem('roles',data.roles); 
+        localStorage.setItem('roles', data.roles); 
 
         setToken(data.user.token);
 
@@ -43,35 +43,41 @@ const LoginPage = ({ onLogin }) => {
           roles: data.roles,
         });
 
+        const roles = localStorage.getItem('roles');
+
+      if (roles && roles.includes('Supervisor')) {
         navigate('/home');
+      } else if (roles && roles.includes('Student')) {
+        navigate('/home/show-projects');
+      }
       } else {
         const errorData = await response.json();
-        setError(errorData.message || 'Login failed. Please try again.');
+        setError(errorData.message || 'فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.');
       }
     } catch (error) {
-      setError('An error occurred. Please try again later.');
+      setError('حدث خطأ. يرجى المحاولة لاحقًا.');
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md space-y-6">
-        <h2 className="text-3xl font-semibold text-center text-gray-800">Login</h2>
+        <h2 className="text-3xl font-semibold text-center text-gray-800">تسجيل الدخول</h2>
         
         <div className="space-y-4">
           <input
             type="email"
-            placeholder="Email"
+            placeholder="البريد الإلكتروني"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none placeholder-gray-400"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none placeholder-gray-400 text-right"
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder="كلمة المرور"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none placeholder-gray-400"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none placeholder-gray-400 text-right"
           />
         </div>
 
@@ -79,7 +85,7 @@ const LoginPage = ({ onLogin }) => {
           type="submit"
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
         >
-          Login
+          تسجيل الدخول
         </button>
 
         {error && (

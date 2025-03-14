@@ -16,20 +16,20 @@ const AddProject = ({ onClose }) => {
     fetchUsers(); 
     const roles = localStorage.getItem("roles");
     if (roles && roles.includes("Supervisor")) {
-      setUserRole("Supervisor");
+      setUserRole("مشرف");
     }
   }, [fetchUsers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (userRole !== "Supervisor") {
-      alert("Only supervisors can add projects.");
+    if (userRole !== "مشرف") {
+      alert("فقط المشرفون يمكنهم إضافة مشاريع.");
       return;
     }
 
     if (!title || !description || !supervisorId || !deadline) {
-      alert("Please fill all fields.");
+      alert("يرجى ملء جميع الحقول.");
       return;
     }
 
@@ -53,35 +53,35 @@ const AddProject = ({ onClose }) => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to add project");
+        throw new Error("فشل في إضافة المشروع");
       }
 
-      alert("Project added successfully!");
+      alert("تم إضافة المشروع بنجاح!");
       setTitle("");
       setDescription("");
       setSupervisorId("");
       setDeadline("");
       onClose();
     } catch (error) {
-      console.error("Error adding project:", error);
+      console.error("خطأ في إضافة المشروع:", error);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center p-4" dir="rtl">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Add Project</h2>
+        <h2 className="text-xl font-bold mb-4">إضافة مشروع</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            placeholder="Project Title"
+            placeholder="عنوان المشروع"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full p-2 border rounded"
           />
           <input
             type="text"
-            placeholder="Description"
+            placeholder="وصف المشروع"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full p-2 border rounded"
@@ -92,7 +92,7 @@ const AddProject = ({ onClose }) => {
             onChange={(e) => setSupervisorId(e.target.value)}
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
           >
-            <option value="">Select Supervisor</option>
+            <option value="">اختر المشرف</option>
             {users.map((user) => (
               <option key={user.id} value={user.id}>
                 {user.username}
@@ -111,13 +111,13 @@ const AddProject = ({ onClose }) => {
               onClick={onClose}
               className="px-4 py-2 bg-gray-400 text-white rounded"
             >
-              Cancel
+              إلغاء
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded"
             >
-              Add Project
+              إضافة المشروع
             </button>
           </div>
         </form>
@@ -137,7 +137,7 @@ const ViewProject = ({ projectId, onClose }) => {
       try {
         const response = await fetch(`http://localhost:5091/api/project/${projectId}`);
         if (!response.ok) {
-          throw new Error("Failed to fetch project details");
+          throw new Error("فشل في جلب تفاصيل المشروع");
         }
         const data = await response.json();
         setProject(data);
@@ -153,31 +153,31 @@ const ViewProject = ({ projectId, onClose }) => {
   }, [projectId, fetchUsers]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>جاري التحميل...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>خطأ: {error}</div>;
   }
 
   const getSupervisorUsername = (supervisorId) => {
     const supervisor = users.find((user) => user.id === supervisorId);
-    return supervisor ? supervisor.username : "Loading...";
+    return supervisor ? supervisor.username : "جاري التحميل...";
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center p-4" dir="rtl">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Project Details</h2>
+        <h2 className="text-xl font-bold mb-4">تفاصيل المشروع</h2>
         <div className="space-y-4">
-          <p><strong>Title:</strong> {project.title}</p>
-          <p><strong>Description:</strong> {project.description}</p>
-          <p><strong>Supervisor:</strong> {getSupervisorUsername(project.supervisor_Id)}</p>
-          <p><strong>Deadline:</strong> {new Date(project.deadline).toLocaleDateString("en-GB")}</p>
-          <p><strong>Created At:</strong> {new Date(project.createdAt).toLocaleString()}</p>
+          <p><strong>العنوان:</strong> {project.title}</p>
+          <p><strong>الوصف:</strong> {project.description}</p>
+          <p><strong>المشرف:</strong> {getSupervisorUsername(project.supervisor_Id)}</p>
+          <p><strong>الموعد النهائي:</strong> {new Date(project.deadline).toLocaleDateString("ar-EG")}</p>
+          <p><strong>تاريخ الإنشاء:</strong> {new Date(project.createdAt).toLocaleString("ar-EG")}</p>
         </div>
         <div className="mt-4">
-          <button onClick={onClose} className="px-4 py-2 bg-gray-400 text-white rounded">Close</button>
+          <button onClick={onClose} className="px-4 py-2 bg-gray-400 text-white rounded">إغلاق</button>
         </div>
       </div>
     </div>
@@ -197,21 +197,21 @@ const ShowProject = () => {
     fetchUsers();
     const roles = localStorage.getItem("roles"); 
     if (roles && roles.includes("Supervisor")) {
-      setUserRole("Supervisor");
+      setUserRole("مشرف");
     } else if (roles && roles.includes("Student")) {
-      setUserRole("Student");
+      setUserRole("طالب");
     }
   }, [fetchProjects, fetchUsers]);
 
   const getSupervisorUsername = (supervisorId) => {
     const supervisor = users.find((user) => user.id === supervisorId);
-    return supervisor ? supervisor.username : "Loading...";
+    return supervisor ? supervisor.username : "جاري التحميل...";
   };
 
   const handleDelete = async (id) => {
     const roles = localStorage.getItem("roles"); 
     if (!roles || !roles.includes("Supervisor")) {
-      alert("Only supervisors can delete projects.");
+      alert("فقط المشرفون يمكنهم حذف المشاريع.");
       return;
     }
   
@@ -224,13 +224,13 @@ const ShowProject = () => {
       });
   
       if (!response.ok) {
-        throw new Error("Failed to delete project");
+        throw new Error("فشل في حذف المشروع");
       }
   
-      alert("Project deleted successfully!");
+      alert("تم حذف المشروع بنجاح!");
       fetchProjects(1, 10);
     } catch (error) {
-      console.error("Error deleting project:", error);
+      console.error("خطأ في حذف المشروع:", error);
     }
   };
 
@@ -245,28 +245,28 @@ const ShowProject = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex" dir="rtl">
       <Sidebar />
       <div className="flex-1 p-6">
-        <h2 className="text-2xl font-bold">Show Projects</h2>
-        {userRole === "Supervisor" && (
+        <h2 className="text-2xl font-bold">عرض المشاريع</h2>
+        {userRole === "مشرف" && (
           <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-blue-600 text-white rounded mt-4">
-            Add Project
+            إضافة مشروع
           </button>
         )}
         {showModal && <AddProject onClose={() => setShowModal(false)} />}
         {projects.length === 0 ? (
-          <p className="mt-4 text-gray-600">No projects found.</p>
+          <p className="mt-4 text-gray-600">لا توجد مشاريع.</p>
         ) : (
           <div className="mt-4 overflow-x-auto">
             <table className="w-full border border-gray-300">
               <thead className="bg-blue-600 text-white">
                 <tr>
-                  <th className="py-2 px-4 border">Project Title</th>
-                  <th className="py-2 px-4 border">Description</th>
-                  <th className="py-2 px-4 border">Supervisor</th>
-                  <th className="py-2 px-4 border">Deadline</th>
-                  <th className="py-2 px-4 border">Actions</th>
+                  <th className="py-2 px-4 border">عنوان المشروع</th>
+                  <th className="py-2 px-4 border">الوصف</th>
+                  <th className="py-2 px-4 border">المشرف</th>
+                  <th className="py-2 px-4 border">الموعد النهائي</th>
+                  <th className="py-2 px-4 border">الإجراءات</th>
                 </tr>
               </thead>
               <tbody>
@@ -275,23 +275,23 @@ const ShowProject = () => {
                     <td className="py-2 px-4 border">{project.title}</td>
                     <td className="py-2 px-4 border">{project.description}</td>
                     <td className="py-2 px-4 border">{getSupervisorUsername(project.supervisor_Id)}</td>
-                    <td className="py-2 px-4 border">{new Date(project.deadline).toLocaleDateString("en-GB")}</td>
+                    <td className="py-2 px-4 border">{new Date(project.deadline).toLocaleDateString("ar-EG")}</td>
                     <td className="py-2 px-4 border text-center">
                       <button
                         onClick={() => handleView(project.id)}
                         className="px-3 py-1 bg-blue-600 text-white rounded mr-2"
                       >
-                        View
+                        عرض
                       </button>
-                      {userRole === "Supervisor" && (
+                      {userRole === "مشرف" && (
                         <button
                           onClick={() => handleDelete(project.id)}
                           className="px-3 py-1 bg-red-600 text-white rounded"
                         >
-                          Delete
+                          حذف
                         </button>
                       )}
-                      {userRole === "Student" && <VoteButton projectId={project.id} />} 
+                      {userRole === "طالب" && <VoteButton projectId={project.id} />} 
                     </td>
                   </tr>
                 ))}
@@ -304,7 +304,6 @@ const ShowProject = () => {
     </div>
   );
 };
-
 
 const VoteButton = ({ projectId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -357,7 +356,5 @@ const VoteButton = ({ projectId }) => {
     </div>
   );
 };
-
-
 
 export { AddProject, ViewProject, ShowProject, VoteButton };

@@ -21,31 +21,31 @@ const AddUserForm = () => {
 
   const validateForm = () => {
     if (!formData.UserName) {
-      alert("Username is required");
+      alert("اسم المستخدم مطلوب");
       return false;
     }
     if (!formData.Email || !/\S+@\S+\.\S+/.test(formData.Email)) {
-      alert("Please enter a valid email address");
+      alert("الرجاء إدخال بريد إلكتروني صالح");
       return false;
     }
     if (!formData.PhoneNumber) {
-      alert("Phone number is required");
+      alert("رقم الهاتف مطلوب");
       return false;
     }
     if (!formData.Password) {
-      alert("Password is required");
+      alert("كلمة المرور مطلوبة");
       return false;
     }
     if (!formData.RoleId) {
-      alert("Role is required");
+      alert("الدور مطلوب");
       return false;
     }
     if (!formData.Sex) {
-      alert("Sex is required");
+      alert("الجنس مطلوب");
       return false;
     }
     if (!formData.DOB) {
-      alert("Date of birth is required");
+      alert("تاريخ الميلاد مطلوب");
       return false;
     }
     return true;
@@ -56,7 +56,7 @@ const AddUserForm = () => {
 
     if (!validateForm()) return;
 
-    console.log("Form Data:", formData);
+    console.log("بيانات النموذج:", formData);
 
     const formDataToSend = new FormData();
     formDataToSend.append("UserName", formData.UserName);
@@ -83,22 +83,22 @@ const AddUserForm = () => {
         if (contentType && contentType.includes("application/json")) {
           data = await response.json();
           addUser(data);
-          alert("User added successfully!");
+          alert("تم إضافة المستخدم بنجاح!");
         } else if (contentType && contentType.includes("text/plain")) {
           const text = await response.text();
           alert(text);
         } else {
-          console.error("Unexpected response format:", contentType);
-          alert("Unexpected response format. Please try again later.");
+          console.error("تنسيق الاستجابة غير متوقع:", contentType);
+          alert("تنسيق الاستجابة غير متوقع. الرجاء المحاولة لاحقاً.");
         }
       } else {
         const errorText = await response.text();
-        console.error("Error response:", errorText);
-        alert(errorText || "Failed to add user");
+        console.error("خطأ في الاستجابة:", errorText);
+        alert(errorText || "فشل إضافة المستخدم");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred. Please try again later.");
+      console.error("حدث خطأ:", error);
+      alert("حدث خطأ. الرجاء المحاولة لاحقاً.");
     }
   };
 
@@ -106,14 +106,15 @@ const AddUserForm = () => {
     <form
       className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-6 mt-10 space-y-4"
       onSubmit={handleSubmit}
+      dir="rtl"  // إضافة خاصية الاتجاه من اليمين لليسار
     >
       <h2 className="text-2xl font-semibold text-center text-gray-700">
-        Add New User
+        إضافة مستخدم جديد
       </h2>
       <input
         type="text"
         name="UserName"
-        placeholder="Username"
+        placeholder="اسم المستخدم"
         value={formData.UserName}
         onChange={handleChange}
         className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
@@ -121,7 +122,7 @@ const AddUserForm = () => {
       <input
         type="email"
         name="Email"
-        placeholder="Email"
+        placeholder="البريد الإلكتروني"
         value={formData.Email}
         onChange={handleChange}
         className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
@@ -129,7 +130,7 @@ const AddUserForm = () => {
       <input
         type="text"
         name="PhoneNumber"
-        placeholder="Phone Number"
+        placeholder="رقم الهاتف"
         value={formData.PhoneNumber}
         onChange={handleChange}
         className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
@@ -137,7 +138,7 @@ const AddUserForm = () => {
       <input
         type="password"
         name="Password"
-        placeholder="Password"
+        placeholder="كلمة المرور"
         value={formData.Password}
         onChange={handleChange}
         className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
@@ -148,14 +149,14 @@ const AddUserForm = () => {
         onChange={handleChange}
         className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
       >
-        <option value="">Select Sex</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
+        <option value="">اختر الجنس</option>
+        <option value="male">ذكر</option>
+        <option value="female">أنثى</option>
       </select>
       <input
         type="date"
         name="DOB"
-        placeholder="Date of Birth"
+        placeholder="تاريخ الميلاد"
         value={formData.DOB}
         onChange={handleChange}
         className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
@@ -166,15 +167,15 @@ const AddUserForm = () => {
         onChange={handleChange}
         className="w-full p-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
       >
-        <option value="">Select Role</option>
-        <option value="22c53b8f-4e38-4b6d-8b12-0c14af849b1e">Supervisor</option>
-        <option value="619e67a2-dafe-4452-8333-208cdc19b083">Student</option>
+        <option value="">اختر الدور</option>
+        <option value="22c53b8f-4e38-4b6d-8b12-0c14af849b1e">مشرف</option>
+        <option value="619e67a2-dafe-4452-8333-208cdc19b083">طالب</option>
       </select>
       <button
         type="submit"
         className="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition"
       >
-        Add User
+        إضافة مستخدم
       </button>
     </form>
   );
